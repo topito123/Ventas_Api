@@ -2,7 +2,6 @@ import User from "./User.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import argon2 from "argon2";
-import mongoose from "mongoose"; 
 
 dotenv.config();
 
@@ -16,7 +15,7 @@ export const registerUser = async (data) => {
         throw new Error("Email already exists");
     }
 
-    const newUser = new User({ name, email, password, role: "CLIENT" }); 
+    const newUser = new User({ name, email, password, role: "CLIENT" });
     return await newUser.save();
 };
 
@@ -28,7 +27,7 @@ export const registerAdminUser = async (data) => {
         throw new Error("Email already exists");
     }
 
-    const newUser = new User({ name, email, password, role: "ADMIN" }); 
+    const newUser = new User({ name, email, password, role: "ADMIN" });
     return await newUser.save();
 };
 
@@ -38,7 +37,7 @@ export const loginUser = async (email, password) => {
         throw new Error("Invalid credentials");
     }
 
-    const isValid = await user.comparePassword(password); 
+    const isValid = await user.comparePassword(password);
     if (!isValid) {
         throw new Error("Invalid credentials");
     }
@@ -53,7 +52,7 @@ export const generateToken = (user) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        iat: Math.floor(Date.now() / 1000), 
+        iat: Math.floor(Date.now() / 1000),
     };
 
     return jwt.sign(payload, SECRET_KEY, { expiresIn: "24h" });
@@ -69,11 +68,6 @@ export const verifyToken = (token) => {
 
 export const initializeAdminUser = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-
         const existingAdmin = await User.findOne({ email: "admin@example.com" });
         if (existingAdmin) {
             console.log("Admin user already exists");
@@ -92,7 +86,5 @@ export const initializeAdminUser = async () => {
         console.log("Admin user created successfully");
     } catch (error) {
         console.error("Error creating admin user", error);
-    } finally {
-        mongoose.connection.close();
     }
 };
